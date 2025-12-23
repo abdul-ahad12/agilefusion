@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgileFusion | Cyber Defense & Digital Security</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --bg-darker: #050508;
+            --bg-card: #0a0a0f;
+            --bg-card-hover: #0f0f18;
+            --text-primary: #ffffff;
+            --text-secondary: #8892a0;
+            --text-muted: #4a5568;
+            --cyber-cyan: #00f0ff;
+            --cyber-cyan-dim: #00a0aa;
+            --cyber-green: #00ff88;
+            --cyber-green-dim: #00aa55;
+            --cyber-magenta: #ff00aa;
+            --cyber-purple: #8844ff;
+            --cyber-red: #ff0044;
+            --cyber-orange: #ff6600;
+            --glow-cyan: 0 0 30px rgba(0, 240, 255, 0.5);
+            --glow-green: 0 0 30px rgba(0, 255, 136, 0.5);
+            --glow-magenta: 0 0 30px rgba(255, 0, 170, 0.5);
+            --border-color: rgba(0, 240, 255, 0.15);
+            --grid-color: rgba(0, 240, 255, 0.03);
+            --scanline-opacity: 0.03;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        ::selection {
+            background: var(--cyber-cyan);
+            color: var(--bg-dark);
+        }
+
+        /* Scanlines Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: var(--scanline-opacity);
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        /* Three.js Canvas */
+        #cyber-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Glitch Effect */
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        @keyframes glitchText {
+            0%, 100% { 
+                text-shadow: 
+                    -2px 0 var(--cyber-magenta),
+                    2px 0 var(--cyber-cyan);
+            }
+            25% { 
+                text-shadow: 
+                    2px 0 var(--cyber-magenta),
+                    -2px 0 var(--cyber-cyan);
+            }
+            50% { 
+                text-shadow: 
+                    -1px 0 var(--cyber-green),
+                    1px 0 var(--cyber-magenta);
+            }
+            75% { 
+                text-shadow: 
+                    1px 0 var(--cyber-cyan),
+                    -1px 0 var(--cyber-green);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            95% { opacity: 0.9; }
+            96% { opacity: 1; }
+        }
+
+        @keyframes dataPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { 
+                border-color: var(--cyber-cyan);
+                box-shadow: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 240, 255, 0.1);
+            }
+            50% { 
+                border-color: var(--cyber-green);
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.4), inset 0 0 20px rgba(0, 255, 136, 0.1);
+            }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--cyber-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        .logo-icon::before {
+            content: '⬡';
+            font-size: 1.2rem;
+            color: var(--cyber-cyan);
+        }
+
+        .logo span {
+            color: var(--cyber-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a::before {
+            content: '[ ';
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: var(--cyber-cyan);
+        }
+
+        .nav-links a::after {
+            content: ' ]';
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: var(--cyber-cyan);
+        }
+
+        .nav-links a:hover {
+            color: var(--cyber-cyan);
+            text-shadow: 0 0 10px var(--cyber-cyan);
+        }
+
+        .nav-links a:hover::before,
+        .nav-links a:hover::after {
+            opacity: 1;
+        }
+
+        .nav-cta {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            color: var(--cyber-cyan);
+            border: 1px solid var(--cyber-cyan);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--cyber-cyan);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-cta:hover {
+            color: var(--bg-dark);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .nav-cta:hover::before {
+            left: 0;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            top: 70px;
+            right: 3rem;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: dataPulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.green { background: var(--cyber-green); }
+        .status-dot.cyan { background: var(--cyber-cyan); }
+        .status-dot.orange { background: var(--cyber-orange); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 5% 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--cyber-green);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: flicker 5s ease-in-out infinite;
+        }
+
+        .hero-tag::before {
+            content: '>';
+            animation: dataPulse 1s ease-in-out infinite;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .hero-title .line {
+            display: block;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        .hero-title .line:nth-child(1) { animation-delay: 0.2s; }
+        .hero-title .line:nth-child(2) { animation-delay: 0.4s; }
+        .hero-title .line:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title .highlight {
+            color: var(--cyber-cyan);
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-title .highlight:hover {
+            animation: glitchText 0.3s ease-in-out;
+        }
+
+        .hero-title .stroke {
+            -webkit-text-stroke: 1px var(--cyber-cyan);
+            color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            max-width: 550px;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.8s;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 1s;
+        }
+
+        .btn-cyber {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 1rem 2rem;
+            background: var(--cyber-cyan);
+            color: var(--bg-dark);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+            transition: all 0.3s ease;
+        }
+
+        .btn-cyber:hover {
+            background: var(--cyber-green);
+            box-shadow: var(--glow-green);
+            transform: translateY(-3px);
+        }
+
+        .btn-ghost {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--cyber-cyan);
+            color: var(--cyber-cyan);
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.1);
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            position: absolute;
+            bottom: 10%;
+            right: 5%;
+            width: 400px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--border-color);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 1.2s;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 240, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: var(--cyber-red); }
+        .terminal-dot.yellow { background: var(--cyber-orange); }
+        .terminal-dot.green { background: var(--cyber-green); }
+
+        .terminal-title {
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 0.65rem;
+        }
+
+        .terminal-body {
+            padding: 1rem;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: terminalType 0.5s ease forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 1.5s; }
+        .terminal-line:nth-child(2) { animation-delay: 2s; }
+        .terminal-line:nth-child(3) { animation-delay: 2.5s; }
+        .terminal-line:nth-child(4) { animation-delay: 3s; }
+        .terminal-line:nth-child(5) { animation-delay: 3.5s; }
+        .terminal-line:nth-child(6) { animation-delay: 4s; }
+
+        @keyframes terminalType {
+            to { opacity: 1; }
+        }
+
+        .terminal-line .prompt {
+            color: var(--cyber-green);
+        }
+
+        .terminal-line .command {
+            color: var(--text-primary);
+        }
+
+        .terminal-line .output {
+            color: var(--text-muted);
+        }
+
+        .terminal-line .success {
+            color: var(--cyber-green);
+        }
+
+        .terminal-line .warning {
+            color: var(--cyber-orange);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 6rem 5%;
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyber-cyan), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .stat-card:hover {
+            border-color: var(--cyber-cyan);
+            box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.05);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--cyber-cyan);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+
+        .stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* Section Styles */
+        .section-header {
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--cyber-cyan);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-tag::before {
+            content: '';
+            width: 30px;
+            height: 1px;
+            background: var(--cyber-cyan);
+        }
+
+        .section-tag::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--cyber-cyan), transparent);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .section-title .highlight {
+            color: var(--cyber-cyan);
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 8rem 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .services-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--cyber-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 240, 255, 0.1);
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border: 1px solid var(--cyber-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--cyber-cyan);
+            position: relative;
+        }
+
+        .service-icon::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            border-top: 1px solid var(--cyber-cyan);
+            border-right: 1px solid var(--cyber-cyan);
+        }
+
+        .service-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: -5px;
+            width: 10px;
+            height: 10px;
+            border-bottom: 1px solid var(--cyber-cyan);
+            border-left: 1px solid var(--cyber-cyan);
+        }
+
+        .service-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .service-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-features {
+            list-style: none;
+        }
+
+        .service-features li {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .service-features li:hover {
+            color: var(--cyber-cyan);
+            padding-left: 0.5rem;
+        }
+
+        .service-features li::before {
+            content: '▹';
+            color: var(--cyber-cyan);
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 8rem 5%;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(180deg, transparent, rgba(0, 240, 255, 0.02), transparent);
+        }
+
+        .products-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .product-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .product-card:hover {
+            border-color: var(--cyber-cyan);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.1);
+        }
+
+        .product-visual {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-darker), var(--bg-card));
+        }
+
+        .product-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            filter: grayscale(50%) contrast(1.2);
+            transition: all 0.5s ease;
+        }
+
+        .product-card:hover .product-visual img {
+            opacity: 1;
+            filter: grayscale(0%) contrast(1);
+            transform: scale(1.05);
+        }
+
+        .product-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), transparent);
+            z-index: 1;
+        }
+
+        .product-visual::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, var(--bg-card), transparent);
+            z-index: 1;
+        }
+
+        .product-content {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--cyber-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 0.02em;
+        }
+
+        .product-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-link {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--cyber-cyan);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .product-link:hover {
+            gap: 1rem;
+            text-shadow: 0 0 10px var(--cyber-cyan);
+        }
+
+        /* Team Section */
+        .team-section {
+            padding: 8rem 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .team-card:hover {
+            border-color: var(--cyber-cyan);
+            transform: translateY(-10px);
+        }
+
+        .team-image {
+            height: 280px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .team-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.1);
+            transition: all 0.5s ease;
+        }
+
+        .team-card:hover .team-image img {
+            filter: grayscale(0%) contrast(1);
+        }
+
+        .team-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 50%, var(--bg-card) 100%);
+            z-index: 1;
+        }
+
+        .team-info {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .team-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .team-role {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            color: var(--cyber-cyan);
+            margin-bottom: 0.8rem;
+        }
+
+        .team-bio {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            padding: 8rem 5%;
+            position: relative;
+            z-index: 1;
+            background: var(--bg-darker);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .testimonials-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonial-content {
+            position: relative;
+            padding: 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .testimonial-content::before {
+            content: '"';
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8rem;
+            position: absolute;
+            top: -2rem;
+            left: 2rem;
+            color: var(--cyber-cyan);
+            opacity: 0.1;
+            line-height: 1;
+        }
+
+        .testimonial-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--cyber-cyan);
+            overflow: hidden;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(50%);
+        }
+
+        .author-info {
+            text-align: left;
+        }
+
+        .author-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .author-role {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--cyber-cyan);
+        }
+
+        /* Clients Section */
+        .clients-section {
+            padding: 4rem 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .clients-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .clients-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4rem;
+        }
+
+        .client-logo {
+            height: 30px;
+            opacity: 0.3;
+            filter: grayscale(100%) brightness(2);
+            transition: all 0.3s ease;
+        }
+
+        .client-logo:hover {
+            opacity: 0.8;
+            filter: grayscale(0%) brightness(1);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding: 8rem 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+        }
+
+        .contact-info {
+            padding-right: 2rem;
+        }
+
+        .contact-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .contact-details {
+            list-style: none;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--cyber-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyber-cyan);
+            flex-shrink: 0;
+        }
+
+        .contact-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .contact-value {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .contact-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+        }
+
+        .form-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-title::before {
+            content: '//';
+            color: var(--cyber-cyan);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cyber-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea.form-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 1.2rem;
+            background: var(--cyber-cyan);
+            color: var(--bg-dark);
+            border: none;
+            cursor: pointer;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .form-submit:hover {
+            background: var(--cyber-green);
+            box-shadow: var(--glow-green);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-darker);
+            border-top: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            padding: 4rem 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1.5rem;
+            display: inline-flex;
+        }
+
+        .footer-brand p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            border-color: var(--cyber-cyan);
+            color: var(--cyber-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .footer-column h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyber-cyan);
+            padding-left: 0.5rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom p {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-legal a {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-legal a:hover {
+            color: var(--cyber-cyan);
+        }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 6rem 5% 4rem;
+            }
+            
+            .terminal-window {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-main {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .status-bar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="grid-bg"></div>
+    <canvas id="cyber-canvas"></canvas>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <span class="status-dot green"></span>
+            <span>SYSTEMS ONLINE</span>
+        </div>
+        <div class="status-item">
+            <span class="status-dot cyan"></span>
+            <span>ENCRYPTION: AES-256</span>
+        </div>
+        <div class="status-item">
+            <span class="status-dot orange"></span>
+            <span>THREAT LEVEL: LOW</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <div class="logo-icon"></div>
+            AGILE<span>FUSION</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#team">Team</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="nav-cta">Initialize Secure Connection</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">// Cyber Defense Initialized</div>
+            <h1 class="hero-title">
+                <span class="line">SECURE YOUR</span>
+                <span class="line"><span class="highlight">DIGITAL</span> FRONTIER</span>
+                <span class="line"><span class="stroke">EVOLVE</span> BEYOND</span>
+            </h1>
+            <p class="hero-description">
+                Next-generation cybersecurity solutions powered by AI and machine learning. We protect your infrastructure, data, and digital assets from evolving threats in real-time.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn-cyber">Request Security Audit</button>
+                <button class="btn-ghost">View Threat Analysis</button>
+            </div>
+        </div>
+        
+        <!-- Terminal Window -->
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="terminal-title">secure_shell@agilefusion</span>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-line">
+                    <span class="prompt">root@agilefusion:~$</span>
+                    <span class="command"> ./security_scan --init</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">[INFO] Initializing threat detection engine...</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">[INFO] Loading neural network models...</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="success">[OK] Firewall status: ACTIVE</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="success">[OK] Intrusion detection: ENABLED</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="warning">[SCAN] Network monitoring active...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card reveal">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Threats Blocked Daily</div>
+            </div>
+            <div class="stat-card reveal">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime Guarantee</div>
+            </div>
+            <div class="stat-card reveal">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">SOC Monitoring</div>
+            </div>
+            <div class="stat-card reveal">
+                <div class="stat-number">&lt;1ms</div>
+                <div class="stat-label">Response Time</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="services-container">
+            <div class="section-header reveal">
+                <div class="section-tag">// Security Services</div>
+                <h2 class="section-title">ADVANCED <span class="highlight">CYBER</span> DEFENSE</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <div class="service-icon">🛡️</div>
+                    <h3 class="service-title">THREAT DETECTION</h3>
+                    <p class="service-desc">AI-powered threat detection and response system that identifies and neutralizes attacks in real-time.</p>
+                    <ul class="service-features">
+                        <li>Machine Learning Analysis</li>
+                        <li>Behavioral Analytics</li>
+                        <li>Zero-Day Protection</li>
+                        <li>Automated Response</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">🔐</div>
+                    <h3 class="service-title">ENDPOINT SECURITY</h3>
+                    <p class="service-desc">Comprehensive endpoint protection for all devices across your enterprise network infrastructure.</p>
+                    <ul class="service-features">
+                        <li>Device Management</li>
+                        <li>Encryption Protocols</li>
+                        <li>Access Control</li>
+                        <li>Patch Management</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">🌐</div>
+                    <h3 class="service-title">NETWORK SECURITY</h3>
+                    <p class="service-desc">Multi-layered network defense with advanced firewall and intrusion prevention systems.</p>
+                    <ul class="service-features">
+                        <li>Firewall Management</li>
+                        <li>IDS/IPS Systems</li>
+                        <li>VPN Solutions</li>
+                        <li>Traffic Analysis</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">☁️</div>
+                    <h3 class="service-title">CLOUD SECURITY</h3>
+                    <p class="service-desc">Secure your cloud infrastructure with enterprise-grade protection for AWS, Azure, and GCP.</p>
+                    <ul class="service-features">
+                        <li>Cloud Posture Management</li>
+                        <li>Container Security</li>
+                        <li>IAM Solutions</li>
+                        <li>Data Encryption</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">📊</div>
+                    <h3 class="service-title">SIEM & SOC</h3>
+                    <p class="service-desc">24/7 Security Operations Center with advanced SIEM capabilities and expert analysts.</p>
+                    <ul class="service-features">
+                        <li>Real-time Monitoring</li>
+                        <li>Log Management</li>
+                        <li>Incident Response</li>
+                        <li>Threat Intelligence</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">✅</div>
+                    <h3 class="service-title">COMPLIANCE</h3>
+                    <p class="service-desc">Navigate complex regulatory requirements with automated compliance management solutions.</p>
+                    <ul class="service-features">
+                        <li>PCI DSS Compliance</li>
+                        <li>GDPR Solutions</li>
+                        <li>SOC 2 Audits</li>
+                        <li>Risk Assessment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section" id="products">
+        <div class="products-container">
+            <div class="section-header reveal">
+                <div class="section-tag">// Security Products</div>
+                <h2 class="section-title">ENGINEERED FOR <span class="highlight">DEFENSE</span></h2>
+            </div>
+            <div class="products-grid">
+                <div class="product-card reveal">
+                    <div class="product-visual">
+                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=80" alt="FusionAuth Security">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-tag">Identity & Access</div>
+                        <h3 class="product-name">FusionAuth</h3>
+                        <p class="product-desc">Zero-trust authentication platform with multi-factor authentication, SSO, and enterprise identity management.</p>
+                        <a href="#" class="product-link">
+                            Initialize Module →
+                        </a>
+                    </div>
+                </div>
+                <div class="product-card reveal">
+                    <div class="product-visual">
+                        <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80" alt="COMPLYment">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-tag">Governance & Risk</div>
+                        <h3 class="product-name">COMPLYment</h3>
+                        <p class="product-desc">Automated compliance platform with real-time monitoring, audit trails, and regulatory framework integration.</p>
+                        <a href="#" class="product-link">
+                            Initialize Module →
+                        </a>
+                    </div>
+                </div>
+                <div class="product-card reveal">
+                    <div class="product-visual">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" alt="DataV Analytics">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-tag">Security Analytics</div>
+                        <h3 class="product-name">DataV</h3>
+                        <p class="product-desc">Advanced security analytics dashboard with threat visualization, trend analysis, and predictive intelligence.</p>
+                        <a href="#" class="product-link">
+                            Initialize Module →
+                        </a>
+                    </div>
+                </div>
+                <div class="product-card reveal">
+                    <div class="product-visual">
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80" alt="FusionZen">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-tag">Security Training</div>
+                        <h3 class="product-name">FusionZen</h3>
+                        <p class="product-desc">AI-powered security awareness training platform with phishing simulations and compliance education.</p>
+                        <a href="#" class="product-link">
+                            Initialize Module →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section" id="team">
+        <div class="team-container">
+            <div class="section-header reveal">
+                <div class="section-tag">// Security Experts</div>
+                <h2 class="section-title">THE <span class="highlight">DEFENSE</span> TEAM</h2>
+            </div>
+            <div class="team-grid">
+                <div class="team-card reveal">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80" alt="Anant Agrawal">
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Anant Agrawal</h3>
+                        <p class="team-role">CEO & Managing Director</p>
+                        <p class="team-bio">28+ years in cybersecurity leadership across financial services and enterprise.</p>
+                    </div>
+                </div>
+                <div class="team-card reveal">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80" alt="Vishwa Kiran">
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Vishwa Kiran</h3>
+                        <p class="team-role">Chief Technology Officer</p>
+                        <p class="team-bio">35 years expertise in security architecture and threat intelligence systems.</p>
+                    </div>
+                </div>
+                <div class="team-card reveal">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80" alt="Mohsin Abbas">
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Mohsin Abbas</h3>
+                        <p class="team-role">Head of Cyber Security</p>
+                        <p class="team-bio">15+ years specializing in cloud security and vulnerability management.</p>
+                    </div>
+                </div>
+                <div class="team-card reveal">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Sampath Polisetty">
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Sampath Polisetty</h3>
+                        <p class="team-role">Director - Public Sector</p>
+                        <p class="team-bio">16.5 years in government and enterprise security consulting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="testimonials-container">
+            <div class="section-header reveal">
+                <div class="section-tag">// Client Testimonials</div>
+                <h2 class="section-title">TRUSTED BY <span class="highlight">ENTERPRISES</span></h2>
+            </div>
+            <div class="testimonial-content reveal">
+                <p class="testimonial-text">"AgileFusion's cybersecurity team implemented our SOC solution flawlessly. Their expertise in threat detection and response has significantly reduced our security incidents. They truly understand enterprise security needs."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&q=80" alt="Client">
+                    </div>
+                    <div class="author-info">
+                        <div class="author-name">Sarah Chen</div>
+                        <div class="author-role">CISO, Fortune 500 Financial Services</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="clients-section">
+        <p class="clients-title">Securing Leading Organizations Worldwide</p>
+        <div class="clients-grid">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Cisco_logo_blue_2016.svg/200px-Cisco_logo_blue_2016.svg.png" alt="Cisco" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/200px-IBM_logo.svg.png" alt="IBM" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/200px-Microsoft_logo.svg.png" alt="Microsoft" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/200px-Amazon_logo.svg.png" alt="Amazon" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png" alt="Google" class="client-logo">
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="contact-container">
+            <div class="contact-info reveal">
+                <div class="section-header">
+                    <div class="section-tag">// Secure Channel</div>
+                    <h2 class="section-title">INITIATE <span class="highlight">CONNECTION</span></h2>
+                </div>
+                <p class="contact-text">Ready to fortify your digital infrastructure? Our security experts are standing by to assess your needs and design a custom defense strategy.</p>
+                <ul class="contact-details">
+                    <li class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <span class="contact-label">Headquarters</span>
+                            <span class="contact-value">Hyderabad, India</span>
+                        </div>
+                    </li>
+                    <li class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <span class="contact-label">Secure Line</span>
+                            <span class="contact-value">+91 40 1234 5678</span>
+                        </div>
+                    </li>
+                    <li class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <span class="contact-label">Encrypted Email</span>
+                            <span class="contact-value">security@agilefusion.com</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="contact-form reveal">
+                <h3 class="form-title">Request Security Consultation</h3>
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" placeholder="John Smith" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" placeholder="john@company.com" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Organization</label>
+                            <input type="text" class="form-input" placeholder="Company Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-input" placeholder="+1 234 567 890">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Security Requirements</label>
+                        <textarea class="form-input" placeholder="Describe your security needs..."></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Transmit Secure Request</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-main">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <div class="logo-icon"></div>
+                    AGILE<span>FUSION</span>
+                </a>
+                <p>Next-generation cybersecurity solutions protecting enterprises from evolving digital threats. Your security is our mission.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link">LI</a>
+                    <a href="#" class="social-link">TW</a>
+                    <a href="#" class="social-link">GH</a>
+                    <a href="#" class="social-link">YT</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Threat Detection</a></li>
+                    <li><a href="#">Endpoint Security</a></li>
+                    <li><a href="#">Cloud Security</a></li>
+                    <li><a href="#">SIEM & SOC</a></li>
+                    <li><a href="#">Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Products</h4>
+                <ul class="footer-links">
+                    <li><a href="#">FusionAuth</a></li>
+                    <li><a href="#">COMPLYment</a></li>
+                    <li><a href="#">DataV</a></li>
+                    <li><a href="#">FusionZen</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 AgileFusion. All systems secured.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Security</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Three.js Cyber Network Visualization
+        let scene, camera, renderer, particles, connections;
+        const canvas = document.getElementById('cyber-canvas');
+        const particleCount = 200;
+        const connectionDistance = 2;
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Create particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const velocities = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 10;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+
+                velocities.push({
+                    x: (Math.random() - 0.5) * 0.01,
+                    y: (Math.random() - 0.5) * 0.01,
+                    z: (Math.random() - 0.5) * 0.01
+                });
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                color: 0x00f0ff,
+                size: 0.05,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            particles.userData.velocities = velocities;
+            scene.add(particles);
+
+            // Create connection lines
+            const linesMaterial = new THREE.LineBasicMaterial({
+                color: 0x00f0ff,
+                transparent: true,
+                opacity: 0.15,
+                blending: THREE.AdditiveBlending
+            });
+
+            connections = new THREE.Group();
+            scene.add(connections);
+
+            // Add floating geometric shapes
+            const shapes = [];
+            for (let i = 0; i < 5; i++) {
+                const geometry = new THREE.OctahedronGeometry(0.3, 0);
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0x00f0ff,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(
+                    (Math.random() - 0.5) * 8,
+                    (Math.random() - 0.5) * 8,
+                    (Math.random() - 0.5) * 8
+                );
+                mesh.userData.rotationSpeed = {
+                    x: (Math.random() - 0.5) * 0.02,
+                    y: (Math.random() - 0.5) * 0.02
+                };
+                shapes.push(mesh);
+                scene.add(mesh);
+            }
+
+            // Add hexagonal ring
+            const ringGeometry = new THREE.RingGeometry(3, 3.1, 6);
+            const ringMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ff88,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.DoubleSide
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.PI / 2;
+            scene.add(ring);
+
+            // Add second ring
+            const ring2 = ring.clone();
+            ring2.rotation.x = 0;
+            ring2.rotation.y = Math.PI / 4;
+            scene.add(ring2);
+
+            function updateConnections() {
+                // Clear old connections
+                while (connections.children.length > 0) {
+                    connections.remove(connections.children[0]);
+                }
+
+                const positions = particles.geometry.attributes.position.array;
+                const linesGeometry = new THREE.BufferGeometry();
+                const linePositions = [];
+
+                for (let i = 0; i < particleCount; i++) {
+                    for (let j = i + 1; j < particleCount; j++) {
+                        const dx = positions[i * 3] - positions[j * 3];
+                        const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+                        const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+                        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                        if (distance < connectionDistance) {
+                            linePositions.push(
+                                positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
+                                positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
+                            );
+                        }
+                    }
+                }
+
+                if (linePositions.length > 0) {
+                    linesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+                    const lines = new THREE.LineSegments(linesGeometry, linesMaterial);
+                    connections.add(lines);
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Update particle positions
+                const positions = particles.geometry.attributes.position.array;
+                const velocities = particles.userData.velocities;
+
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3] += velocities[i].x;
+                    positions[i * 3 + 1] += velocities[i].y;
+                    positions[i * 3 + 2] += velocities[i].z;
+
+                    // Boundary check
+                    if (Math.abs(positions[i * 3]) > 5) velocities[i].x *= -1;
+                    if (Math.abs(positions[i * 3 + 1]) > 5) velocities[i].y *= -1;
+                    if (Math.abs(positions[i * 3 + 2]) > 5) velocities[i].z *= -1;
+                }
+
+                particles.geometry.attributes.position.needsUpdate = true;
+
+                // Update connections every few frames
+                if (Math.random() < 0.1) {
+                    updateConnections();
+                }
+
+                // Rotate shapes
+                shapes.forEach(shape => {
+                    shape.rotation.x += shape.userData.rotationSpeed.x;
+                    shape.rotation.y += shape.userData.rotationSpeed.y;
+                });
+
+                // Rotate rings
+                ring.rotation.z += 0.002;
+                ring2.rotation.z -= 0.002;
+
+                // Slow scene rotation
+                scene.rotation.y += 0.0005;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        // Mouse interaction
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+            
+            if (scene) {
+                scene.rotation.x = mouseY * 0.1;
+                scene.rotation.y = mouseX * 0.1;
+            }
+        });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Initialize Three.js
+        initThree();
+
+        // Scroll reveal animations
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealOnScroll = () => {
+            revealElements.forEach((el, i) => {
+                const elementTop = el.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    setTimeout(() => {
+                        el.classList.add('active');
+                    }, i * 50);
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.querySelector('.form-submit');
+            btn.textContent = '[ TRANSMISSION SUCCESSFUL ]';
+            btn.style.background = '#00ff88';
+            
+            setTimeout(() => {
+                btn.textContent = 'Transmit Secure Request';
+                btn.style.background = '';
+                document.getElementById('contactForm').reset();
+            }, 3000);
+        });
+
+        // Glitch effect on hover for hero title
+        const heroTitle = document.querySelector('.hero-title');
+        heroTitle.addEventListener('mouseenter', () => {
+            heroTitle.style.animation = 'glitch 0.5s ease-in-out';
+            setTimeout(() => {
+                heroTitle.style.animation = '';
+            }, 500);
+        });
+
+        // Random data pulse for status indicators
+        setInterval(() => {
+            const statusDots = document.querySelectorAll('.status-dot');
+            const randomDot = statusDots[Math.floor(Math.random() * statusDots.length)];
+            randomDot.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+                randomDot.style.transform = 'scale(1)';
+            }, 200);
+        }, 2000);
+    </script>
+</body>
+</html>
