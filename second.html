@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgileFusion | Enterprise Digital Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-cream: #FAF7F2;
+            --color-warm-white: #FFFDF9;
+            --color-sand: #E8E2D9;
+            --color-taupe: #C4B7A6;
+            --color-charcoal: #2D2D2D;
+            --color-graphite: #1A1A1A;
+            --color-slate: #4A4A4A;
+            --color-copper: #B87333;
+            --color-copper-light: #D4956A;
+            --color-copper-dark: #8B5A2B;
+            --color-forest: #2C4A3E;
+            --color-navy: #1E3A5F;
+            
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Outfit', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+            --spacing-xl: 8rem;
+            --spacing-2xl: 12rem;
+            
+            --transition-fast: 0.2s ease;
+            --transition-medium: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --shadow-subtle: 0 2px 20px rgba(0, 0, 0, 0.04);
+            --shadow-medium: 0 8px 40px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-cream);
+            color: var(--color-charcoal);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: var(--color-copper);
+            color: var(--color-warm-white);
+        }
+
+        /* Smooth Scroll Container */
+        .smooth-scroll {
+            position: relative;
+        }
+
+        /* Elegant Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-graphite);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .loader-logo {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 500;
+            color: var(--color-warm-white);
+            letter-spacing: 0.1em;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .loader-bar {
+            width: 200px;
+            height: 1px;
+            background: var(--color-slate);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: var(--color-copper);
+            animation: loadBar 2s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes loadBar {
+            to { width: 100%; }
+        }
+
+        .loader.loaded {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        /* Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.5rem 5%;
+            transition: var(--transition-medium);
+        }
+
+        header.scrolled {
+            background: rgba(250, 247, 242, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-subtle);
+            padding: 1rem 5%;
+        }
+
+        nav {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--color-graphite);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+
+        .logo span {
+            color: var(--color-copper);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-slate);
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: var(--transition-fast);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-copper);
+            transition: var(--transition-medium);
+        }
+
+        .nav-menu a:hover {
+            color: var(--color-graphite);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            padding: 0.9rem 2rem;
+            background: var(--color-graphite);
+            color: var(--color-warm-white);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-medium);
+        }
+
+        .nav-cta:hover {
+            background: var(--color-copper);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .menu-toggle span {
+            width: 28px;
+            height: 1.5px;
+            background: var(--color-graphite);
+            transition: var(--transition-fast);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--spacing-xl) 5% var(--spacing-xl) 8%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-copper);
+            margin-bottom: var(--spacing-md);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease forwards 0.5s;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 500;
+            line-height: 1.1;
+            color: var(--color-graphite);
+            margin-bottom: var(--spacing-md);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 1s ease forwards 0.7s;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--color-copper);
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: var(--color-slate);
+            max-width: 500px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease forwards 0.9s;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease forwards 1.1s;
+        }
+
+        .btn-primary {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 1.2rem 2.5rem;
+            background: var(--color-graphite);
+            color: var(--color-warm-white);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-medium);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--color-copper);
+            transition: var(--transition-medium);
+            z-index: -1;
+        }
+
+        .btn-primary:hover::before {
+            left: 0;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(184, 115, 51, 0.3);
+        }
+
+        .btn-secondary {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 1.2rem 2.5rem;
+            background: transparent;
+            color: var(--color-graphite);
+            border: 1px solid var(--color-taupe);
+            cursor: pointer;
+            transition: var(--transition-medium);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-graphite);
+            background: var(--color-graphite);
+            color: var(--color-warm-white);
+            transform: translateY(-3px);
+        }
+
+        .hero-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1.1);
+            animation: imageReveal 1.5s ease forwards 0.3s;
+        }
+
+        @keyframes imageReveal {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(184, 115, 51, 0.1), transparent);
+            z-index: 1;
+        }
+
+        .hero-stats {
+            position: absolute;
+            bottom: var(--spacing-lg);
+            left: 8%;
+            display: flex;
+            gap: var(--spacing-lg);
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 1.3s;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 500;
+            color: var(--color-copper);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--color-slate);
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            position: relative;
+        }
+
+        .section-padding {
+            padding: var(--spacing-2xl) 8%;
+        }
+
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--color-copper);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .section-tag::before {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--color-copper);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 500;
+            color: var(--color-graphite);
+            line-height: 1.15;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .section-title em {
+            font-style: italic;
+            color: var(--color-copper);
+        }
+
+        /* About Section */
+        .about {
+            background: var(--color-warm-white);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: var(--spacing-xl);
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .about-image {
+            position: relative;
+            height: 600px;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-image::after {
+            content: '';
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            right: calc(var(--spacing-md) * -1);
+            bottom: calc(var(--spacing-md) * -1);
+            border: 1px solid var(--color-copper);
+            z-index: -1;
+        }
+
+        .about-content {
+            padding-left: var(--spacing-lg);
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            color: var(--color-slate);
+            margin-bottom: var(--spacing-md);
+            line-height: 1.9;
+        }
+
+        .about-text:first-of-type::first-letter {
+            font-family: var(--font-display);
+            font-size: 4.5rem;
+            font-weight: 600;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.5rem;
+            margin-top: 0.1rem;
+            color: var(--color-copper);
+        }
+
+        .values-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .value-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--color-cream);
+            transition: var(--transition-medium);
+        }
+
+        .value-item:hover {
+            transform: translateX(10px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .value-letter {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--color-copper);
+            line-height: 1;
+        }
+
+        .value-info h4 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-graphite);
+            margin-bottom: 0.3rem;
+        }
+
+        .value-info p {
+            font-size: 0.85rem;
+            color: var(--color-slate);
+        }
+
+        /* Services Section */
+        .services {
+            background: var(--color-graphite);
+            color: var(--color-warm-white);
+        }
+
+        .services .section-tag {
+            color: var(--color-copper-light);
+        }
+
+        .services .section-tag::before {
+            background: var(--color-copper-light);
+        }
+
+        .services .section-title {
+            color: var(--color-warm-white);
+        }
+
+        .services-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto var(--spacing-xl);
+        }
+
+        .services-description {
+            font-size: 1.1rem;
+            color: var(--color-taupe);
+            margin-top: var(--spacing-sm);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--color-slate);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: var(--color-graphite);
+            padding: var(--spacing-lg);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-medium);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--color-copper);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition-medium);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            background: var(--color-slate);
+        }
+
+        .service-number {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 300;
+            color: var(--color-slate);
+            line-height: 1;
+            margin-bottom: var(--spacing-sm);
+            transition: var(--transition-medium);
+        }
+
+        .service-card:hover .service-number {
+            color: var(--color-copper);
+        }
+
+        .service-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .service-desc {
+            font-size: 0.95rem;
+            color: var(--color-taupe);
+            line-height: 1.7;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .service-features {
+            list-style: none;
+        }
+
+        .service-features li {
+            font-size: 0.85rem;
+            color: var(--color-sand);
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .service-features li::before {
+            content: '—';
+            color: var(--color-copper);
+        }
+
+        /* Products Section */
+        .products {
+            background: var(--color-cream);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            max-width: 1400px;
+            margin: 0 auto var(--spacing-xl);
+        }
+
+        .products-header-left {
+            max-width: 600px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--color-warm-white);
+            border: 1px solid var(--color-sand);
+            overflow: hidden;
+            transition: var(--transition-medium);
+        }
+
+        .product-card:hover {
+            box-shadow: var(--shadow-strong);
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-slow);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-content {
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-name {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--color-graphite);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .product-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-copper);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .product-desc {
+            font-size: 0.95rem;
+            color: var(--color-slate);
+            line-height: 1.7;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .product-link {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-graphite);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-fast);
+        }
+
+        .product-link:hover {
+            color: var(--color-copper);
+            gap: 1rem;
+        }
+
+        .product-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: var(--color-warm-white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonials::before {
+            content: '"';
+            font-family: var(--font-display);
+            font-size: 40rem;
+            position: absolute;
+            top: -8rem;
+            right: 5%;
+            color: var(--color-sand);
+            opacity: 0.3;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .testimonials-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonial-slider {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-slide {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: var(--transition-slow);
+        }
+
+        .testimonial-slide.active {
+            opacity: 1;
+            position: relative;
+        }
+
+        .testimonial-text {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 400;
+            font-style: italic;
+            color: var(--color-graphite);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+
+        .author-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--color-copper);
+        }
+
+        .author-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-info {
+            text-align: left;
+        }
+
+        .author-name {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-graphite);
+        }
+
+        .author-role {
+            font-size: 0.85rem;
+            color: var(--color-slate);
+        }
+
+        .testimonial-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: var(--spacing-lg);
+        }
+
+        .testimonial-dot {
+            width: 10px;
+            height: 10px;
+            border: 1px solid var(--color-taupe);
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .testimonial-dot.active {
+            background: var(--color-copper);
+            border-color: var(--color-copper);
+        }
+
+        /* Team Section */
+        .team {
+            background: var(--color-cream);
+        }
+
+        .team-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto var(--spacing-xl);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .team-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .team-image {
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .team-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: var(--transition-medium);
+        }
+
+        .team-card:hover .team-image img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .team-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: var(--spacing-md);
+            background: linear-gradient(to top, rgba(26, 26, 26, 0.95), transparent);
+            transform: translateY(30%);
+            transition: var(--transition-medium);
+        }
+
+        .team-card:hover .team-overlay {
+            transform: translateY(0);
+        }
+
+        .team-name {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--color-warm-white);
+            margin-bottom: 0.3rem;
+        }
+
+        .team-role {
+            font-size: 0.85rem;
+            color: var(--color-copper-light);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .team-bio {
+            font-size: 0.85rem;
+            color: var(--color-taupe);
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition-medium);
+        }
+
+        .team-card:hover .team-bio {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Clients Section */
+        .clients {
+            background: var(--color-warm-white);
+            padding: var(--spacing-xl) 8%;
+        }
+
+        .clients-header {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .clients-header h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--color-slate);
+        }
+
+        .clients-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .client-logo {
+            height: 40px;
+            opacity: 0.4;
+            filter: grayscale(100%);
+            transition: var(--transition-medium);
+        }
+
+        .client-logo:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--color-graphite);
+            color: var(--color-warm-white);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: var(--spacing-xl);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .contact-info {
+            padding-right: var(--spacing-lg);
+        }
+
+        .contact .section-tag {
+            color: var(--color-copper-light);
+        }
+
+        .contact .section-tag::before {
+            background: var(--color-copper-light);
+        }
+
+        .contact .section-title {
+            color: var(--color-warm-white);
+        }
+
+        .contact-text {
+            font-size: 1.05rem;
+            color: var(--color-taupe);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.8;
+        }
+
+        .contact-details {
+            list-style: none;
+        }
+
+        .contact-details li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--color-slate);
+        }
+
+        .contact-details li:last-child {
+            border-bottom: none;
+        }
+
+        .contact-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--color-copper);
+        }
+
+        .contact-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-taupe);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .contact-value {
+            font-size: 1rem;
+            color: var(--color-warm-white);
+        }
+
+        .contact-form-container {
+            background: var(--color-slate);
+            padding: var(--spacing-lg);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-taupe);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--color-graphite);
+            border: 1px solid var(--color-slate);
+            color: var(--color-warm-white);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-copper);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-slate);
+        }
+
+        textarea.form-input {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 1.2rem;
+            background: var(--color-copper);
+            color: var(--color-warm-white);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-medium);
+            margin-top: var(--spacing-sm);
+        }
+
+        .form-submit:hover {
+            background: var(--color-copper-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-graphite);
+            border-top: 1px solid var(--color-slate);
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-xl) 8%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .footer-brand .logo {
+            color: var(--color-warm-white);
+            margin-bottom: var(--spacing-sm);
+            display: inline-block;
+        }
+
+        .footer-brand p {
+            font-size: 0.95rem;
+            color: var(--color-taupe);
+            line-height: 1.7;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-slate);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--color-taupe);
+            transition: var(--transition-fast);
+        }
+
+        .social-link:hover {
+            background: var(--color-copper);
+            border-color: var(--color-copper);
+            color: var(--color-warm-white);
+        }
+
+        .footer-column h4 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-warm-white);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
+            color: var(--color-taupe);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--color-copper);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--color-slate);
+            padding: var(--spacing-md) 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .footer-bottom p {
+            font-size: 0.85rem;
+            color: var(--color-slate);
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .footer-legal a {
+            font-size: 0.85rem;
+            color: var(--color-slate);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-legal a:hover {
+            color: var(--color-copper);
+        }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-main {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+            
+            .hero-image {
+                height: 50vh;
+                order: -1;
+            }
+            
+            .hero-content {
+                padding: var(--spacing-lg) 5%;
+            }
+            
+            .hero-stats {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                margin-top: var(--spacing-lg);
+            }
+            
+            .about-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-image {
+                height: 400px;
+            }
+            
+            .about-content {
+                padding-left: 0;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-image {
+                height: 250px;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .values-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                text-align: center;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-logo">AgileFusion</div>
+        <div class="loader-bar"></div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <nav>
+            <a href="#" class="logo">Agile<span>Fusion</span></a>
+            <ul class="nav-menu">
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#team">Leadership</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="nav-cta">Get Started</button>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag">Digital Excellence Since 2010</span>
+            <h1 class="hero-title">Transforming <em>Vision</em> Into Digital Reality</h1>
+            <p class="hero-description">We partner with enterprises to architect scalable solutions, modernize infrastructure, and accelerate growth through strategic technology consulting.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary">Schedule Consultation</button>
+                <button class="btn-secondary">View Case Studies</button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Projects Delivered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime Guarantee</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80" alt="Modern office space">
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about section-padding" id="about">
+        <div class="about-grid">
+            <div class="about-image reveal-left">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80" alt="Team collaboration">
+            </div>
+            <div class="about-content reveal-right">
+                <span class="section-tag">Our Story</span>
+                <h2 class="section-title">Building <em>Tomorrow's</em> Digital Enterprises</h2>
+                <p class="about-text">AgileFusion began its journey fifteen years ago with a singular purpose: bridging the gap between vision and execution. What started as a commitment to closing the delivery gap has evolved into a trusted name in IT Consulting and Managed Services.</p>
+                <p class="about-text">As a team of highly competent professionals, we possess both the agility to address unique challenges and the capability to scale enterprise solutions. We believe in crafting meaningful, pragmatic solutions that drive real business outcomes across diverse verticals.</p>
+                <div class="values-list">
+                    <div class="value-item">
+                        <span class="value-letter">E</span>
+                        <div class="value-info">
+                            <h4>Empower</h4>
+                            <p>Technology that works for you</p>
+                        </div>
+                    </div>
+                    <div class="value-item">
+                        <span class="value-letter">V</span>
+                        <div class="value-info">
+                            <h4>Value</h4>
+                            <p>Solutions with real impact</p>
+                        </div>
+                    </div>
+                    <div class="value-item">
+                        <span class="value-letter">O</span>
+                        <div class="value-info">
+                            <h4>Optimize</h4>
+                            <p>Efficient and effective delivery</p>
+                        </div>
+                    </div>
+                    <div class="value-item">
+                        <span class="value-letter">L</span>
+                        <div class="value-info">
+                            <h4>Lead</h4>
+                            <p>Innovation-driven expertise</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services section-padding" id="services">
+        <div class="services-header reveal">
+            <span class="section-tag">What We Do</span>
+            <h2 class="section-title">Enterprise <em>Solutions</em> for Modern Challenges</h2>
+            <p class="services-description">Comprehensive technology services designed to accelerate your digital transformation journey.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <span class="service-number">01</span>
+                <h3 class="service-title">Digital Transformation</h3>
+                <p class="service-desc">End-to-end modernization of enterprise processes, products, and platforms with focus on agility and measurable outcomes.</p>
+                <ul class="service-features">
+                    <li>Agile Engineering</li>
+                    <li>Application Development</li>
+                    <li>DevOps Implementation</li>
+                    <li>Process Automation</li>
+                </ul>
+            </div>
+            <div class="service-card reveal">
+                <span class="service-number">02</span>
+                <h3 class="service-title">AI & Data Analytics</h3>
+                <p class="service-desc">Harness the power of data and artificial intelligence to drive insights and automate critical business decisions.</p>
+                <ul class="service-features">
+                    <li>Machine Learning Solutions</li>
+                    <li>Predictive Analytics</li>
+                    <li>Business Intelligence</li>
+                    <li>Data Engineering</li>
+                </ul>
+            </div>
+            <div class="service-card reveal">
+                <span class="service-number">03</span>
+                <h3 class="service-title">Cyber Security</h3>
+                <p class="service-desc">Comprehensive security solutions to protect digital assets, ensure compliance, and maintain operational integrity.</p>
+                <ul class="service-features">
+                    <li>Security Operations Center</li>
+                    <li>Vulnerability Assessment</li>
+                    <li>Compliance Management</li>
+                    <li>Threat Intelligence</li>
+                </ul>
+            </div>
+            <div class="service-card reveal">
+                <span class="service-number">04</span>
+                <h3 class="service-title">Cloud Infrastructure</h3>
+                <p class="service-desc">Design, build, and manage scalable cloud infrastructure for tomorrow's digital enterprises.</p>
+                <ul class="service-features">
+                    <li>Cloud Migration</li>
+                    <li>Multi-Cloud Strategy</li>
+                    <li>Infrastructure as Code</li>
+                    <li>Disaster Recovery</li>
+                </ul>
+            </div>
+            <div class="service-card reveal">
+                <span class="service-number">05</span>
+                <h3 class="service-title">Managed Operations</h3>
+                <p class="service-desc">Dedicated operational support with round-the-clock monitoring and expert management services.</p>
+                <ul class="service-features">
+                    <li>24/7 NOC Support</li>
+                    <li>Offshore Delivery</li>
+                    <li>Service Desk</li>
+                    <li>Performance Monitoring</li>
+                </ul>
+            </div>
+            <div class="service-card reveal">
+                <span class="service-number">06</span>
+                <h3 class="service-title">Enterprise Integration</h3>
+                <p class="service-desc">Seamless integration of systems, applications, and data across your enterprise ecosystem.</p>
+                <ul class="service-features">
+                    <li>API Management</li>
+                    <li>System Integration</li>
+                    <li>Data Migration</li>
+                    <li>Legacy Modernization</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products section-padding" id="products">
+        <div class="products-header">
+            <div class="products-header-left reveal">
+                <span class="section-tag">Our Products</span>
+                <h2 class="section-title">Engineered for <em>Enterprise</em> Success</h2>
+            </div>
+        </div>
+        <div class="products-grid">
+            <div class="product-card reveal">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80" alt="Security authentication">
+                </div>
+                <div class="product-content">
+                    <span class="product-tagline">Identity & Access</span>
+                    <h3 class="product-name">FusionAuth</h3>
+                    <p class="product-desc">Unified authentication platform with seamless integration for enterprise applications and social networks. Supports OAuth, SAML, and OpenID Connect.</p>
+                    <a href="#" class="product-link">
+                        Explore Solution
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="product-card reveal">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80" alt="Compliance management">
+                </div>
+                <div class="product-content">
+                    <span class="product-tagline">Governance & Risk</span>
+                    <h3 class="product-name">COMPLYment</h3>
+                    <p class="product-desc">Systematic compliance platform incorporating security frameworks and policies to ensure regulatory adherence across your organization.</p>
+                    <a href="#" class="product-link">
+                        Explore Solution
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="product-card reveal">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" alt="Data visualization">
+                </div>
+                <div class="product-content">
+                    <span class="product-tagline">Analytics Platform</span>
+                    <h3 class="product-name">DataV</h3>
+                    <p class="product-desc">Advanced analytics and visualization platform to analyze data, illustrate trends, and drive informed decision-making across your enterprise.</p>
+                    <a href="#" class="product-link">
+                        Explore Solution
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="product-card reveal">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80" alt="Learning platform">
+                </div>
+                <div class="product-content">
+                    <span class="product-tagline">Learning Intelligence</span>
+                    <h3 class="product-name">FusionZen</h3>
+                    <p class="product-desc">AI-powered learning system that accelerates onboarding, standardizes operations, and elevates talent development without friction.</p>
+                    <a href="#" class="product-link">
+                        Explore Solution
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section-padding">
+        <div class="testimonials-container reveal">
+            <span class="section-tag">Client Testimonials</span>
+            <h2 class="section-title">Trusted by <em>Industry</em> Leaders</h2>
+            <div class="testimonial-slider">
+                <div class="testimonial-slide active">
+                    <p class="testimonial-text">"The team quickly understood our requirements and consistently delivered improvements that enhanced user experience. Their communication was exemplary and they remained highly responsive throughout our engagement."</p>
+                    <div class="testimonial-author">
+                        <div class="author-image">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80" alt="Client">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">James Mitchell</div>
+                            <div class="author-role">Director of Technology, Tesco</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-slide">
+                    <p class="testimonial-text">"Their technical expertise and proactive approach made our SSO implementation seamless. This collaboration has significantly strengthened our security and compliance framework beyond expectations."</p>
+                    <div class="testimonial-author">
+                        <div class="author-image">
+                            <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&q=80" alt="Client">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Priya Sharma</div>
+                            <div class="author-role">CTO, Light Finance</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-slide">
+                    <p class="testimonial-text">"We are thoroughly impressed by their innovative solutions backed by unwavering reliability. Their commitment to accountability and consistent quality of service are truly exceptional."</p>
+                    <div class="testimonial-author">
+                        <div class="author-image">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80" alt="Client">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Rajesh Kumar</div>
+                            <div class="author-role">VP Engineering, HDFC Bank</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-nav">
+                <button class="testimonial-dot active" data-index="0"></button>
+                <button class="testimonial-dot" data-index="1"></button>
+                <button class="testimonial-dot" data-index="2"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team section-padding" id="team">
+        <div class="team-header reveal">
+            <span class="section-tag">Leadership</span>
+            <h2 class="section-title">Meet Our <em>Visionaries</em></h2>
+        </div>
+        <div class="team-grid">
+            <div class="team-card reveal">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Anant Agrawal">
+                </div>
+                <div class="team-overlay">
+                    <h3 class="team-name">Anant Agrawal</h3>
+                    <p class="team-role">CEO & Managing Director</p>
+                    <p class="team-bio">28+ years driving innovation across Financial Services, Capital Markets, and Retail sectors with strategic vision.</p>
+                </div>
+            </div>
+            <div class="team-card reveal">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80" alt="Vishwa Kiran">
+                </div>
+                <div class="team-overlay">
+                    <h3 class="team-name">Vishwa Kiran</h3>
+                    <p class="team-role">Chief Digital & Technology Officer</p>
+                    <p class="team-bio">35 years of expertise in product engineering, enterprise architecture, and digital transformation leadership.</p>
+                </div>
+            </div>
+            <div class="team-card reveal">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80" alt="Murukraj Nair">
+                </div>
+                <div class="team-overlay">
+                    <h3 class="team-name">Murukraj Nair</h3>
+                    <p class="team-role">Director - Cloud & Infrastructure</p>
+                    <p class="team-bio">16+ years expertise in DC consolidation, integration projects, and service delivery excellence.</p>
+                </div>
+            </div>
+            <div class="team-card reveal">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80" alt="Sampath Polisetty">
+                </div>
+                <div class="team-overlay">
+                    <h3 class="team-name">Sampath Polisetty</h3>
+                    <p class="team-role">Director - Public Sector</p>
+                    <p class="team-bio">16.5 years in Cloud, IT Infrastructure, and Cyber Security solutions for enterprise clients.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="clients">
+        <div class="clients-header reveal">
+            <h3>Trusted by leading organizations worldwide</h3>
+        </div>
+        <div class="clients-grid reveal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/200px-Amazon_logo.svg.png" alt="Amazon" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png" alt="Google" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/200px-Microsoft_logo.svg.png" alt="Microsoft" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Cisco_logo_blue_2016.svg/200px-Cisco_logo_blue_2016.svg.png" alt="Cisco" class="client-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/200px-IBM_logo.svg.png" alt="IBM" class="client-logo">
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section-padding" id="contact">
+        <div class="contact-grid">
+            <div class="contact-info reveal-left">
+                <span class="section-tag">Get In Touch</span>
+                <h2 class="section-title">Let's Build <em>Something</em> Exceptional</h2>
+                <p class="contact-text">Ready to transform your enterprise? Our team of experts is here to guide you through your digital evolution journey with tailored solutions and dedicated support.</p>
+                <ul class="contact-details">
+                    <li>
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <div>
+                            <span class="contact-label">Headquarters</span>
+                            <span class="contact-value">Hyderabad, India</span>
+                        </div>
+                    </li>
+                    <li>
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                        </svg>
+                        <div>
+                            <span class="contact-label">Phone</span>
+                            <span class="contact-value">+91 40 1234 5678</span>
+                        </div>
+                    </li>
+                    <li>
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <div>
+                            <span class="contact-label">Email</span>
+                            <span class="contact-value">hello@agilefusion.com</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="contact-form-container reveal-right">
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" placeholder="John Smith" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" placeholder="john@company.com" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-input" placeholder="Your Company">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-input" placeholder="+1 234 567 890">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">How can we help?</label>
+                        <textarea class="form-input" placeholder="Tell us about your project requirements..."></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-main">
+            <div class="footer-brand">
+                <a href="#" class="logo">Agile<span>Fusion</span></a>
+                <p>Your strategic partner in digital transformation. We deliver enterprise solutions that empower businesses to thrive in the age of innovation.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Li</a>
+                    <a href="#" class="social-link">Tw</a>
+                    <a href="#" class="social-link">Fb</a>
+                    <a href="#" class="social-link">Yt</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Digital Transformation</a></li>
+                    <li><a href="#">AI & Data Analytics</a></li>
+                    <li><a href="#">Cyber Security</a></li>
+                    <li><a href="#">Cloud Infrastructure</a></li>
+                    <li><a href="#">Managed Operations</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Products</h4>
+                <ul class="footer-links">
+                    <li><a href="#">FusionAuth</a></li>
+                    <li><a href="#">COMPLYment</a></li>
+                    <li><a href="#">DataV</a></li>
+                    <li><a href="#">FusionZen</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Leadership</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">News & Insights</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 AgileFusion. All rights reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('loaded');
+            }, 2200);
+        });
+
+        // Header Scroll Effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth Scroll for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll Reveal Animation
+        const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+        
+        const revealOnScroll = () => {
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    el.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Testimonial Slider
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const dots = document.querySelectorAll('.testimonial-dot');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                dots[i].classList.remove('active');
+            });
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+
+        // Auto-advance testimonials
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 6000);
+
+        // Form Submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.querySelector('.form-submit');
+            btn.textContent = 'Message Sent Successfully';
+            btn.style.background = '#2C4A3E';
+            
+            setTimeout(() => {
+                btn.textContent = 'Send Message';
+                btn.style.background = '';
+                document.getElementById('contactForm').reset();
+            }, 3000);
+        });
+
+        // Parallax Effect for Hero Image
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const heroImage = document.querySelector('.hero-image img');
+            if (heroImage && scrolled < window.innerHeight) {
+                heroImage.style.transform = `scale(${1 + scrolled * 0.0002}) translateY(${scrolled * 0.2}px)`;
+            }
+        });
+
+        // Staggered Animation for Service Cards
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.1}s`;
+        });
+
+        // Staggered Animation for Team Cards
+        const teamCards = document.querySelectorAll('.team-card');
+        teamCards.forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.15}s`;
+        });
+    </script>
+</body>
+</html>
